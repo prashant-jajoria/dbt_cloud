@@ -1,0 +1,28 @@
+/*
+**** DBT - Trip fact ***
+- Documentation on the TIMESTAMPDIFF function in snowflake: https://docs.snowflake.com/en/sql-reference/functions/timestampdiff
+- Code used for trip_fact.sql model:
+*/
+
+{{ config(materialized='table') }}
+
+WITH TRIPS as (
+
+select
+RIDE_ID,
+-- RIDEABLE_TYPE,
+DATE(TO_TIMESTAMP(STARTED_AT))  AS TRIP_DATE,
+START_STATIO_ID                 AS START_STATION_ID,
+END_STATION_ID,
+MEMBER_CSUAL                    AS MEMBER_CASUAL,
+TIMESTAMPDIFF(SECOND,TO_TIMESTAMP(STARTED_AT),TO_TIMESTAMP(ENDED_AT)) AS TRIP_DURATION_SECONDS
+
+from {{ ref('stg_bike') }}
+
+where RIDE_ID != 'ride_id' and RIDE_ID != '"ride_id"'
+
+)
+
+select
+*
+from TRIPS
