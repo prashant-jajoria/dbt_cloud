@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 WITH CTE AS
 (
     SELECT 
@@ -13,7 +15,7 @@ WITH CTE AS
     {{DAY_TYPE('STARTED_AT')}}      as DAYTYPE,
     {{GET_SEASON('STARTED_AT')}}    as STATION_OF_YEAR,
     
-    FROM {{source('demo','bike')}}
+    FROM {{ ref('stg_bike') }}
     WHERE STARTED_AT != 'started_at'
 )
 SELECT * FROM CTE
